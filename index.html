@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atomic Habits Tracker</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Habits" />
+  <meta name="theme-color" content="#96874d" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    /* Colour scheme: Sanzo Wada, A Dictionary of Color Combinations (Seigensha), no. 233.
+       Primary: Buffy Citrine #96874d. Partners: Carmine Red #a62c37, Violet Blue #40456a.
+       Mapped onto Tailwind's emerald (primary), rose (bad habits), indigo (identity),
+       amber (soft highlights) and stone (neutrals), so the markup needs no changes. */
+    tailwind.config = { theme: { extend: { colors: {
+        "emerald": {
+                "50": "#f4f3ed",
+                "100": "#eae7db",
+                "200": "#d7d1bb",
+                "300": "#c2b998",
+                "400": "#ab9f71",
+                "500": "#96874d",
+                "600": "#7e7140",
+                "700": "#6c6137",
+                "800": "#574e2d",
+                "900": "#3f3920"
+        },
+        "rose": {
+                "50": "#f6eaeb",
+                "100": "#edd5d7",
+                "200": "#ddafb3",
+                "300": "#cb858b",
+                "400": "#b8565f",
+                "500": "#a62c37",
+                "600": "#922730",
+                "700": "#782028",
+                "800": "#601a20",
+                "900": "#461217"
+        },
+        "indigo": {
+                "50": "#eeeff4",
+                "100": "#dedfe9",
+                "200": "#c0c3d5",
+                "300": "#9fa3bf",
+                "400": "#7b80a7",
+                "500": "#5a6091",
+                "600": "#4f5480",
+                "700": "#40456a",
+                "800": "#30345a",
+                "900": "#222544"
+        },
+        "amber": {
+                "50": "#faf8ee",
+                "100": "#f4f0de",
+                "200": "#eae2c0",
+                "300": "#e0d49e",
+                "400": "#d4c379",
+                "500": "#c9b458",
+                "600": "#8d7e3e",
+                "700": "#6f6330",
+                "800": "#544c25",
+                "900": "#3c361a"
+        },
+        "stone": {
+                "50": "#f7f4eb",
+                "100": "#eeeadb",
+                "200": "#ddd8c5",
+                "300": "#c4bfae",
+                "400": "#858496",
+                "500": "#6a6b84",
+                "600": "#53556f",
+                "700": "#3d4060",
+                "800": "#2b2e4b",
+                "900": "#1d1f38"
+        }
+} } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.95); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    .pop-once {
+      animation: pop 0.22s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-emerald-500 text-stone-900 min-h-screen antialiased">
+  <div class="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold tracking-wide uppercase mb-3">
+        <span>Atomic Habits</span>
+        <span>&bull;</span>
+        <span>Four Laws</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">
+        Atomic Habits Tracker
+      </h1>
+      <p class="mt-1.5 text-sm sm:text-base text-stone-900">
+        Design good habits with the Four Laws, break bad ones by inverting them, and back up your data anytime.
+      </p>
+    </header>
+
+    <!-- How it works -->
+    <details class="mb-6 bg-white border border-stone-200 rounded-2xl shadow-sm">
+      <summary class="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-stone-900">
+        How it works: the Four Laws
+      </summary>
+      <div class="px-4 pb-4 text-xs sm:text-sm text-stone-600 space-y-3">
+        <p>
+          Small habits, repeated, become who you are. Each tick is a vote for the person you want to be.
+          Based on <em>Atomic Habits</em> by James Clear.
+        </p>
+        <div class="overflow-hidden rounded-xl border border-stone-200">
+          <table class="w-full text-left">
+            <thead class="bg-stone-100 text-stone-700">
+              <tr>
+                <th class="px-3 py-1.5 font-semibold">Law</th>
+                <th class="px-3 py-1.5 font-semibold text-emerald-700">Build a good habit</th>
+                <th class="px-3 py-1.5 font-semibold text-rose-700">Break a bad habit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+              <tr><td class="px-3 py-1.5">1. Cue</td><td class="px-3 py-1.5">Make it obvious</td><td class="px-3 py-1.5">Make it invisible</td></tr>
+              <tr><td class="px-3 py-1.5">2. Craving</td><td class="px-3 py-1.5">Make it attractive</td><td class="px-3 py-1.5">Make it unattractive</td></tr>
+              <tr><td class="px-3 py-1.5">3. Response</td><td class="px-3 py-1.5">Make it easy</td><td class="px-3 py-1.5">Make it difficult</td></tr>
+              <tr><td class="px-3 py-1.5">4. Reward</td><td class="px-3 py-1.5">Make it satisfying</td><td class="px-3 py-1.5">Make it unsatisfying</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>Cue:</strong> attach the habit to something you already do.</li>
+          <li><strong>Identity:</strong> state who you are becoming, so each tick is a vote for it.</li>
+          <li><strong>2-Minute Rule:</strong> start with a version so small you can't say no.</li>
+          <li><strong>Never miss twice:</strong> one miss is fine; do the tiny version the next day.</li>
+          <li><strong>Reward:</strong> give yourself an immediate, small reward, even just ticking it off.</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Mode Tabs -->
+    <nav class="flex gap-2 p-1 bg-stone-100 rounded-2xl mb-6" aria-label="Habit modes">
+      <button
+        id="tab-good"
+        type="button"
+        class="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition bg-white text-stone-900 shadow-sm"
+      >
+        Build Good Habits
+      </button>
+      <button
+        id="tab-bad"
+        type="button"
+        class="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition text-stone-600 hover:text-stone-900"
+      >
+        Break Bad Habits
+      </button>
+    </nav>
+
+    <!-- GOOD HABITS VIEW -->
+    <div id="view-good">
+      <!-- Progress Summary -->
+      <section class="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
+        <div class="grid grid-cols-3 gap-3 items-center">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-stone-500">Today</p>
+            <p id="progress-text" class="text-base sm:text-xl font-semibold text-stone-900 mt-0.5">
+              0 of 3 done
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs font-medium uppercase tracking-wider text-stone-500">Identity Votes</p>
+            <p id="total-votes" class="text-base sm:text-xl font-semibold text-indigo-700 mt-0.5">0</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs font-medium uppercase tracking-wider text-stone-500">Streak Days</p>
+            <p id="total-streak" class="text-base sm:text-xl font-semibold text-emerald-700 mt-0.5">0</p>
+          </div>
+        </div>
+        <div class="mt-3 h-2 w-full bg-stone-100 rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+      </section>
+
+      <!-- Add Habit Form -->
+      <section class="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
+        <h2 class="text-sm font-semibold text-stone-900 mb-3">Add a New Habit</h2>
+        <form id="habit-form" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="habit-name" class="block text-xs font-medium text-stone-600 mb-1">
+                Habit
+              </label>
+              <input
+                id="habit-name"
+                type="text"
+                required
+                placeholder="e.g., Read before bed"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label for="habit-identity" class="block text-xs font-medium text-stone-600 mb-1">
+                2. Make It Attractive (Identity)
+              </label>
+              <input
+                id="habit-identity"
+                type="text"
+                placeholder="I am a lifelong reader"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label for="habit-cue" class="block text-xs font-medium text-stone-600 mb-1">
+                1. Make It Obvious (Cue)
+              </label>
+              <input
+                id="habit-cue"
+                type="text"
+                placeholder="After I brush my teeth..."
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label for="habit-tiny" class="block text-xs font-medium text-stone-600 mb-1">
+                3. Make It Easy (2-Min Rule)
+              </label>
+              <input
+                id="habit-tiny"
+                type="text"
+                placeholder="Read 1 page"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label for="habit-goal" class="block text-xs font-medium text-stone-600 mb-1">
+                Weekly Goal
+              </label>
+              <select
+                id="habit-goal"
+                class="w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="3">3 days / week</option>
+                <option value="4">4 days / week</option>
+                <option value="5" selected>5 days / week</option>
+                <option value="6">6 days / week</option>
+                <option value="7">7 days / week</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="habit-reward" class="block text-xs font-medium text-stone-600 mb-1">
+              4. Make It Satisfying (Reward)
+            </label>
+            <input
+              id="habit-reward"
+              type="text"
+              placeholder="Tick it off, then enjoy a coffee"
+              class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            />
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <p id="form-feedback" class="text-xs text-emerald-700 font-medium hidden">Habit added!</p>
+            <button
+              type="submit"
+              class="ml-auto inline-flex items-center justify-center rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800 active:scale-[0.99] transition"
+            >
+              + Add Habit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Habit List -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-stone-900">Your Daily Habits</h2>
+          <button
+            id="reset-btn"
+            type="button"
+            class="text-xs font-medium text-stone-900 hover:text-white transition"
+          >
+            Reset starters
+          </button>
+        </div>
+        <div id="habit-list" class="space-y-3"></div>
+      </section>
+    </div>
+
+    <!-- BAD HABITS VIEW -->
+    <div id="view-bad" class="hidden">
+      <!-- Bad Habit Form -->
+      <section class="bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
+        <h2 class="text-sm font-semibold text-stone-900 mb-1">Break a Bad Habit (Inverted Four Laws)</h2>
+        <p class="text-xs text-stone-500 mb-3">
+          Remove the cue, add friction, and make the habit less appealing.
+        </p>
+        <form id="bad-form" class="space-y-3">
+          <div>
+            <label for="bad-name" class="block text-xs font-medium text-stone-600 mb-1">
+              Habit to Break
+            </label>
+            <input
+              id="bad-name"
+              type="text"
+              required
+              placeholder="e.g., Late-night scrolling"
+              class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+            />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="bad-invisible" class="block text-xs font-medium text-stone-600 mb-1">
+                1. Make It Invisible
+              </label>
+              <input
+                id="bad-invisible"
+                type="text"
+                placeholder="Charge phone outside bedroom"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+              />
+            </div>
+            <div>
+              <label for="bad-unattractive" class="block text-xs font-medium text-stone-600 mb-1">
+                2. Make It Unattractive
+              </label>
+              <input
+                id="bad-unattractive"
+                type="text"
+                placeholder="Steals tomorrow's focus"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+              />
+            </div>
+            <div>
+              <label for="bad-difficult" class="block text-xs font-medium text-stone-600 mb-1">
+                3. Make It Difficult
+              </label>
+              <input
+                id="bad-difficult"
+                type="text"
+                placeholder="Log out of apps after use"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+              />
+            </div>
+            <div>
+              <label for="bad-unsatisfying" class="block text-xs font-medium text-stone-600 mb-1">
+                4. Make It Unsatisfying
+              </label>
+              <input
+                id="bad-unsatisfying"
+                type="text"
+                placeholder="Text a friend if I slip up"
+                class="w-full rounded-xl border border-stone-300 px-3.5 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+              />
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <p id="bad-feedback" class="text-xs text-emerald-700 font-medium hidden">Added to your list!</p>
+            <button
+              type="submit"
+              class="ml-auto inline-flex items-center justify-center rounded-xl bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800 active:scale-[0.99] transition"
+            >
+              + Add Plan
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Bad Habit List -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-stone-900">Habits You&apos;re Breaking</h2>
+          <button
+            id="bad-reset-btn"
+            type="button"
+            class="text-xs font-medium text-stone-900 hover:text-white transition"
+          >
+            Reset starters
+          </button>
+        </div>
+        <div id="bad-list" class="space-y-3"></div>
+      </section>
+    </div>
+
+    <!-- Backup & Restore Footer -->
+    <footer class="mt-8 bg-white border border-stone-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 class="text-sm font-semibold text-stone-900">Backup &amp; Restore</h2>
+          <p id="backup-status" class="text-xs text-stone-500 mt-0.5">
+            Save your habits as a JSON file or restore from a previous backup.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            id="export-btn"
+            type="button"
+            class="rounded-xl border border-stone-300 bg-white px-3.5 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-100 transition"
+          >
+            Export JSON
+          </button>
+          <label
+            for="import-input"
+            class="cursor-pointer rounded-xl bg-stone-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-stone-800 transition"
+          >
+            Import JSON
+          </label>
+          <input id="import-input" type="file" accept=".json,application/json" class="hidden" />
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'atomic_habits_v3';
+    const LEGACY_KEYS = ['atomic_habits_v2', 'atomic_habits_v1'];
+    const BAD_STORAGE_KEY = 'atomic_habits_bad_v1';
+
+    const DEFAULT_HABITS = [
+      {
+        id: 'h1',
+        name: 'Read for enjoyment',
+        identity: 'I am a reader',
+        cue: 'After I pour my morning coffee',
+        tiny: 'Read 1 page',
+        reward: 'Enjoy the coffee while I read',
+        goal: 5,
+        week: [true, false, true, true, true, false, false]
+      },
+      {
+        id: 'h2',
+        name: 'Stay hydrated',
+        identity: 'I care for my energy',
+        cue: 'After I sit down at my desk',
+        tiny: 'Drink 1 glass of water',
+        reward: 'Tick it off and feel refreshed',
+        goal: 7,
+        week: [true, true, true, true, true, true, false]
+      },
+      {
+        id: 'h3',
+        name: 'Daily journaling',
+        identity: 'I am a reflective thinker',
+        cue: 'After I brush my teeth at night',
+        tiny: 'Write 2 sentences',
+        reward: 'Close the day with a settled mind',
+        goal: 4,
+        week: [false, true, true, false, true, false, false]
+      }
+    ];
+
+    const DEFAULT_BAD_HABITS = [
+      {
+        id: 'b1',
+        name: 'Late-night phone scrolling',
+        invisible: 'Charge phone in the kitchen overnight',
+        unattractive: 'Trades deep sleep for groggy mornings',
+        difficult: 'Turn on grayscale and log out of social apps',
+        unsatisfying: 'Tell an accountability partner if I slip',
+        avoidedToday: false,
+        cleanDays: 4
+      },
+      {
+        id: 'b2',
+        name: 'Afternoon sugary snacks',
+        invisible: 'Keep snacks out of sight in a high cupboard',
+        unattractive: 'Causes an energy crash an hour later',
+        difficult: 'Keep only fruit and water on my desk',
+        unsatisfying: 'Write down why I reached for it',
+        avoidedToday: false,
+        cleanDays: 2
+      }
+    ];
+
+    function getDayLabels() {
+      const labels = [];
+      const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const today = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        labels.push(i === 0 ? 'Today' : names[d.getDay()]);
+      }
+      return labels;
+    }
+
+    function computeStreak(week) {
+      let streak = 0;
+      const start = week[6] ? 6 : 5;
+      for (let i = start; i >= 0; i--) {
+        if (week[i]) streak++;
+        else break;
+      }
+      return streak;
+    }
+
+    function normalizeHabit(h) {
+      const week = (Array.isArray(h.week) && h.week.length === 7)
+        ? h.week.map(Boolean)
+        : (() => {
+            const arr = [false, false, false, false, false, false, Boolean(h.doneToday)];
+            const s = Number(h.streak) || 0;
+            for (let i = 0; i < Math.min(s, 6); i++) arr[5 - i] = true;
+            return arr;
+          })();
+      return {
+        id: h.id || ('h_' + Date.now()),
+        name: h.name || 'Habit',
+        identity: h.identity || 'I am consistent',
+        cue: h.cue || 'After my morning routine',
+        tiny: h.tiny || 'Start for 2 minutes',
+        reward: h.reward || '',
+        goal: Math.min(7, Math.max(1, Number(h.goal) || 5)),
+        week
+      };
+    }
+
+    function loadHabits() {
+      try {
+        let raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          for (const k of LEGACY_KEYS) {
+            raw = localStorage.getItem(k);
+            if (raw) break;
+          }
+        }
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map(normalizeHabit);
+          }
+        }
+      } catch (e) {
+        // Fallback to default habits if storage is unavailable
+      }
+      return DEFAULT_HABITS.map(h => ({ ...h, week: [...h.week] }));
+    }
+
+    function saveHabits() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    function loadBadHabits() {
+      try {
+        const raw = localStorage.getItem(BAD_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        // Fallback
+      }
+      return DEFAULT_BAD_HABITS.map(b => ({ ...b }));
+    }
+
+    function saveBadHabits() {
+      try {
+        localStorage.setItem(BAD_STORAGE_KEY, JSON.stringify(badHabits));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    const LASTDAY_KEY = 'atomic_habits_lastday';
+
+    function normalizeBad(b) {
+      return {
+        id: b.id || ('b_' + Date.now()),
+        name: b.name || 'Bad habit',
+        invisible: b.invisible || '',
+        unattractive: b.unattractive || '',
+        difficult: b.difficult || '',
+        unsatisfying: b.unsatisfying || '',
+        avoidedToday: Boolean(b.avoidedToday),
+        cleanDays: Math.max(0, Number(b.cleanDays) || 0)
+      };
+    }
+
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function dayDiff(fromKey, toKey) {
+      const a = new Date(fromKey + 'T00:00:00');
+      const b = new Date(toKey + 'T00:00:00');
+      return Math.round((b - a) / 86400000);
+    }
+
+    // Shift the 7-day window forward when a new day has started.
+    function rolloverDays() {
+      let last = null;
+      try { last = localStorage.getItem(LASTDAY_KEY); } catch (e) {}
+      const today = todayKey();
+      if (!last) {
+        try { localStorage.setItem(LASTDAY_KEY, today); } catch (e) {}
+        return false;
+      }
+      const diff = dayDiff(last, today);
+      if (diff <= 0) return false;
+      const shift = Math.min(diff, 7);
+      habits = habits.map(h => {
+        const week = [...h.week.slice(shift), ...Array(shift).fill(false)].slice(-7);
+        return { ...h, week };
+      });
+      badHabits = badHabits.map(b => ({ ...b, avoidedToday: false }));
+      saveHabits();
+      saveBadHabits();
+      try { localStorage.setItem(LASTDAY_KEY, today); } catch (e) {}
+      return true;
+    }
+
+    let habits = loadHabits();
+    let badHabits = loadBadHabits().map(normalizeBad);
+    rolloverDays();
+    let activeTab = 'good';
+    let editingId = null;
+
+    let timerState = {
+      habitId: null,
+      secondsLeft: 120,
+      running: false,
+      intervalId: null
+    };
+
+    const tabGoodBtn = document.getElementById('tab-good');
+    const tabBadBtn = document.getElementById('tab-bad');
+    const viewGoodEl = document.getElementById('view-good');
+    const viewBadEl = document.getElementById('view-bad');
+
+    const habitListEl = document.getElementById('habit-list');
+    const progressTextEl = document.getElementById('progress-text');
+    const totalVotesEl = document.getElementById('total-votes');
+    const totalStreakEl = document.getElementById('total-streak');
+    const progressBarEl = document.getElementById('progress-bar');
+    const habitFormEl = document.getElementById('habit-form');
+    const habitNameInput = document.getElementById('habit-name');
+    const habitIdentityInput = document.getElementById('habit-identity');
+    const habitCueInput = document.getElementById('habit-cue');
+    const habitTinyInput = document.getElementById('habit-tiny');
+    const habitRewardInput = document.getElementById('habit-reward');
+    const habitGoalInput = document.getElementById('habit-goal');
+    const formFeedbackEl = document.getElementById('form-feedback');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const badFormEl = document.getElementById('bad-form');
+    const badNameInput = document.getElementById('bad-name');
+    const badInvisibleInput = document.getElementById('bad-invisible');
+    const badUnattractiveInput = document.getElementById('bad-unattractive');
+    const badDifficultInput = document.getElementById('bad-difficult');
+    const badUnsatisfyingInput = document.getElementById('bad-unsatisfying');
+    const badFeedbackEl = document.getElementById('bad-feedback');
+    const badListEl = document.getElementById('bad-list');
+    const badResetBtn = document.getElementById('bad-reset-btn');
+
+    const exportBtn = document.getElementById('export-btn');
+    const importInput = document.getElementById('import-input');
+    const backupStatusEl = document.getElementById('backup-status');
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function stopTimerInterval() {
+      if (timerState.intervalId !== null) {
+        clearInterval(timerState.intervalId);
+        timerState.intervalId = null;
+      }
+      timerState.running = false;
+    }
+
+    function startTimerFor(habitId) {
+      if (timerState.habitId !== habitId) {
+        stopTimerInterval();
+        timerState.habitId = habitId;
+        timerState.secondsLeft = 120;
+      } else {
+        stopTimerInterval();
+      }
+      if (timerState.secondsLeft <= 0) {
+        timerState.secondsLeft = 120;
+      }
+      timerState.running = true;
+      timerState.intervalId = setInterval(() => {
+        timerState.secondsLeft -= 1;
+        if (timerState.secondsLeft <= 0) {
+          timerState.secondsLeft = 0;
+          stopTimerInterval();
+          habits = habits.map(h => {
+            if (h.id !== habitId) return h;
+            const nextWeek = [...h.week];
+            nextWeek[6] = true;
+            return { ...h, week: nextWeek };
+          });
+          saveHabits();
+        }
+        if (editingId === null) render();
+      }, 1000);
+      render();
+    }
+
+    function resetTimerFor(habitId) {
+      if (timerState.habitId === habitId) {
+        stopTimerInterval();
+        timerState.secondsLeft = 120;
+        render();
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      if (tab === 'good') {
+        viewGoodEl.classList.remove('hidden');
+        viewBadEl.classList.add('hidden');
+        tabGoodBtn.className = 'flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition bg-white text-stone-900 shadow-sm';
+        tabBadBtn.className = 'flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition text-stone-600 hover:text-stone-900';
+      } else {
+        viewBadEl.classList.remove('hidden');
+        viewGoodEl.classList.add('hidden');
+        tabBadBtn.className = 'flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition bg-white text-stone-900 shadow-sm';
+        tabGoodBtn.className = 'flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition text-stone-600 hover:text-stone-900';
+      }
+    }
+
+    tabGoodBtn.addEventListener('click', () => switchTab('good'));
+    tabBadBtn.addEventListener('click', () => switchTab('bad'));
+
+    function render() {
+      const dayLabels = getDayLabels();
+      const total = habits.length;
+      const completed = habits.filter(h => h.week[6]).length;
+      const totalVotes = habits.reduce((sum, h) => sum + h.week.filter(Boolean).length, 0);
+      const totalStreak = habits.reduce((sum, h) => sum + computeStreak(h.week), 0);
+      const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      progressTextEl.textContent = `${completed} of ${total} done`;
+      totalVotesEl.textContent = String(totalVotes);
+      totalStreakEl.textContent = String(totalStreak);
+      progressBarEl.style.width = `${pct}%`;
+
+      if (total === 0) {
+        habitListEl.innerHTML = `
+          <div class="bg-white border border-dashed border-stone-300 rounded-2xl p-6 text-center text-sm text-stone-500">
+            No habits yet. Add your first tiny habit above!
+          </div>
+        `;
+      } else {
+        habitListEl.innerHTML = habits.map(habit => {
+          if (editingId === habit.id) {
+            return `
+              <article class="border border-stone-300 bg-white rounded-2xl p-4 sm:p-5 shadow-sm" data-id="${escapeHtml(habit.id)}">
+                <form class="space-y-3" data-edit-form="${escapeHtml(habit.id)}">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">Edit Habit</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-medium text-stone-600 mb-1">Habit</label>
+                      <input name="name" type="text" required value="${escapeHtml(habit.name)}"
+                        class="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-stone-600 mb-1">Identity</label>
+                      <input name="identity" type="text" value="${escapeHtml(habit.identity)}"
+                        class="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label class="block text-xs font-medium text-stone-600 mb-1">Cue (Obvious)</label>
+                      <input name="cue" type="text" value="${escapeHtml(habit.cue)}"
+                        class="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-stone-600 mb-1">2-Min Rule (Easy)</label>
+                      <input name="tiny" type="text" value="${escapeHtml(habit.tiny)}"
+                        class="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-stone-600 mb-1">Weekly Goal</label>
+                      <select name="goal" class="w-full rounded-xl border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        ${[3, 4, 5, 6, 7].map(n => `<option value="${n}" ${habit.goal === n ? 'selected' : ''}>${n} days / week</option>`).join('')}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-stone-600 mb-1">Reward (Satisfying)</label>
+                    <input name="reward" type="text" value="${escapeHtml(habit.reward || '')}"
+                      class="w-full rounded-xl border border-stone-300 px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <div class="flex items-center justify-end gap-2 pt-1">
+                    <button type="button" data-action="cancel-edit"
+                      class="rounded-xl px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 transition">
+                      Cancel
+                    </button>
+                    <button type="submit"
+                      class="rounded-xl bg-stone-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-stone-800 transition">
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              </article>
+            `;
+          }
+
+          const doneToday = habit.week[6];
+          const missedYesterday = !habit.week[5] && !doneToday;
+          const streak = computeStreak(habit.week);
+          const votes = habit.week.filter(Boolean).length;
+          const goalMet = votes >= habit.goal;
+
+          const isTimerActive = timerState.habitId === habit.id;
+          const timerLabel = isTimerActive ? formatTime(timerState.secondsLeft) : '02:00';
+
+          const cardBorder = doneToday
+            ? 'border-emerald-300 bg-emerald-50'
+            : missedYesterday
+              ? 'border-amber-300 bg-amber-50'
+              : 'border-stone-200 bg-white';
+
+          const btnStyle = doneToday
+            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+            : 'bg-stone-100 text-stone-700 hover:bg-stone-200';
+          const btnLabel = doneToday ? 'Done ✓' : 'Mark Done';
+
+          const goalBadgeClass = goalMet
+            ? 'bg-emerald-100 text-emerald-800'
+            : 'bg-indigo-50 text-indigo-700';
+
+          const weekHtml = habit.week.map((checked, idx) => {
+            const isToday = idx === 6;
+            const dotClass = checked
+              ? 'bg-emerald-500 text-white border-emerald-500'
+              : isToday
+                ? 'bg-white text-stone-500 border-stone-400 border-dashed hover:border-emerald-500'
+                : 'bg-stone-100 text-stone-400 border-stone-200 hover:border-stone-400';
+
+            return `
+              <button
+                type="button"
+                data-action="toggle-day"
+                data-day="${idx}"
+                title="Toggle ${dayLabels[idx]}"
+                class="flex flex-col items-center gap-1"
+              >
+                <span class="text-[10px] font-medium ${isToday ? 'text-stone-900 font-semibold' : 'text-stone-400'}">
+                  ${dayLabels[idx]}
+                </span>
+                <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border flex items-center justify-center text-xs font-bold transition ${dotClass}">
+                  ${checked ? '✓' : ''}
+                </span>
+              </button>
+            `;
+          }).join('');
+
+          return `
+            <article class="border rounded-2xl p-4 sm:p-5 shadow-sm transition ${cardBorder}" data-id="${escapeHtml(habit.id)}">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="text-base font-semibold text-stone-900 ${doneToday ? 'line-through text-stone-500' : ''}">
+                      ${escapeHtml(habit.name)}
+                    </h3>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-900">
+                      ${streak}d streak
+                    </span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${goalBadgeClass}">
+                      ${votes}/${habit.goal} goal${goalMet ? ' ✓' : ''}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs font-medium text-indigo-700">
+                    Identity: &ldquo;${escapeHtml(habit.identity || 'I am consistent')}&rdquo;
+                  </p>
+                  <div class="mt-2 space-y-1 text-xs sm:text-sm text-stone-600">
+                    <p><span class="font-medium text-stone-800">Cue:</span> ${escapeHtml(habit.cue || 'Anytime today')}</p>
+                    <p><span class="font-medium text-stone-800">2-Min Rule:</span> ${escapeHtml(habit.tiny || 'Just start for 2 minutes')}</p>
+                    ${habit.reward ? `<p><span class="font-medium text-stone-800">Reward:</span> ${escapeHtml(habit.reward)}</p>` : ''}
+                  </div>
+
+                  <div class="mt-3 flex flex-wrap items-center gap-2">
+                    ${isTimerActive && timerState.running ? `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-900 text-white text-xs font-mono font-semibold">
+                        ${timerLabel}
+                      </span>
+                      <button type="button" data-action="pause-timer"
+                        class="rounded-lg border border-stone-300 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:bg-stone-100 transition">
+                        Pause
+                      </button>
+                      <button type="button" data-action="reset-timer"
+                        class="rounded-lg px-2 py-1 text-xs text-stone-500 hover:text-stone-800 transition">
+                        Reset
+                      </button>
+                    ` : isTimerActive && timerState.secondsLeft < 120 && timerState.secondsLeft > 0 ? `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-200 text-stone-800 text-xs font-mono font-semibold">
+                        ${timerLabel}
+                      </span>
+                      <button type="button" data-action="start-timer"
+                        class="rounded-lg bg-stone-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-stone-800 transition">
+                        Resume
+                      </button>
+                      <button type="button" data-action="reset-timer"
+                        class="rounded-lg px-2 py-1 text-xs text-stone-500 hover:text-stone-800 transition">
+                        Reset
+                      </button>
+                    ` : `
+                      <button type="button" data-action="start-timer"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:bg-stone-100 transition">
+                        <span>&#9201;</span>
+                        <span>Start 2-Min Timer</span>
+                      </button>
+                    `}
+                  </div>
+
+                  ${missedYesterday ? `
+                    <p class="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-xs font-medium">
+                      <span>Never miss twice:</span>
+                      <span>do the 2-minute version today!</span>
+                    </p>
+                  ` : ''}
+                </div>
+                <div class="flex flex-col items-end gap-2 shrink-0">
+                  <button
+                    type="button"
+                    data-action="toggle"
+                    class="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition ${btnStyle}"
+                  >
+                    ${btnLabel}
+                  </button>
+                  <div class="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      data-action="edit"
+                      class="text-xs text-stone-500 hover:text-stone-900 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      data-action="delete"
+                      class="text-xs text-stone-400 hover:text-rose-600 transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 pt-3 border-t border-stone-200/70 flex items-center justify-between gap-1">
+                ${weekHtml}
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      renderBadHabits();
+    }
+
+    function renderBadHabits() {
+      if (badHabits.length === 0) {
+        badListEl.innerHTML = `
+          <div class="bg-white border border-dashed border-stone-300 rounded-2xl p-6 text-center text-sm text-stone-500">
+            No bad habits tracked yet. Add one above to design your friction plan!
+          </div>
+        `;
+        return;
+      }
+
+      badListEl.innerHTML = badHabits.map(b => {
+        const cardBorder = b.avoidedToday
+          ? 'border-emerald-300 bg-emerald-50'
+          : 'border-stone-200 bg-white';
+        const btnStyle = b.avoidedToday
+          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+          : 'bg-stone-100 text-stone-700 hover:bg-stone-200';
+        const btnLabel = b.avoidedToday ? 'Avoided ✓' : 'Avoided Today';
+
+        return `
+          <article class="border rounded-2xl p-4 sm:p-5 shadow-sm transition ${cardBorder}" data-bad-id="${escapeHtml(b.id)}">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-base font-semibold text-stone-900">${escapeHtml(b.name)}</h3>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700">
+                    ${b.cleanDays}d clean
+                  </span>
+                </div>
+                <div class="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-600">
+                  <p><span class="font-medium text-stone-800">Invisible:</span> ${escapeHtml(b.invisible || 'Hide the cue')}</p>
+                  <p><span class="font-medium text-stone-800">Unattractive:</span> ${escapeHtml(b.unattractive || 'Highlight the downside')}</p>
+                  <p><span class="font-medium text-stone-800">Difficult:</span> ${escapeHtml(b.difficult || 'Add extra steps')}</p>
+                  <p><span class="font-medium text-stone-800">Unsatisfying:</span> ${escapeHtml(b.unsatisfying || 'Add accountability')}</p>
+                </div>
+              </div>
+              <div class="flex flex-col items-end gap-2 shrink-0">
+                <button
+                  type="button"
+                  data-bad-action="toggle"
+                  class="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold transition ${btnStyle}"
+                >
+                  ${btnLabel}
+                </button>
+                <button
+                  type="button"
+                  data-bad-action="delete"
+                  class="text-xs text-stone-400 hover:text-rose-600 transition"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    habitListEl.addEventListener('click', (event) => {
+      const btn = event.target.closest('button[data-action]');
+      if (!btn) return;
+      const card = btn.closest('article[data-id]');
+      if (!card) return;
+      const id = card.getAttribute('data-id');
+      const action = btn.getAttribute('data-action');
+
+      if (action === 'toggle') {
+        habits = habits.map(h => {
+          if (h.id !== id) return h;
+          const nextWeek = [...h.week];
+          nextWeek[6] = !nextWeek[6];
+          return { ...h, week: nextWeek };
+        });
+        saveHabits();
+        render();
+        const updatedCard = habitListEl.querySelector(`article[data-id="${CSS.escape(id)}"]`);
+        if (updatedCard) updatedCard.classList.add('pop-once');
+      } else if (action === 'toggle-day') {
+        const dayIdx = Number(btn.getAttribute('data-day'));
+        if (Number.isNaN(dayIdx) || dayIdx < 0 || dayIdx > 6) return;
+        habits = habits.map(h => {
+          if (h.id !== id) return h;
+          const nextWeek = [...h.week];
+          nextWeek[dayIdx] = !nextWeek[dayIdx];
+          return { ...h, week: nextWeek };
+        });
+        saveHabits();
+        render();
+      } else if (action === 'edit') {
+        editingId = id;
+        render();
+      } else if (action === 'cancel-edit') {
+        editingId = null;
+        render();
+      } else if (action === 'start-timer') {
+        startTimerFor(id);
+      } else if (action === 'pause-timer') {
+        stopTimerInterval();
+        render();
+      } else if (action === 'reset-timer') {
+        resetTimerFor(id);
+      } else if (action === 'delete') {
+        if (timerState.habitId === id) stopTimerInterval();
+        habits = habits.filter(h => h.id !== id);
+        saveHabits();
+        render();
+      }
+    });
+
+    habitListEl.addEventListener('submit', (event) => {
+      const form = event.target.closest('form[data-edit-form]');
+      if (!form) return;
+      event.preventDefault();
+      const id = form.getAttribute('data-edit-form');
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      if (!name) return;
+
+      habits = habits.map(h => {
+        if (h.id !== id) return h;
+        return {
+          ...h,
+          name,
+          identity: String(data.get('identity') || '').trim() || 'I am consistent',
+          cue: String(data.get('cue') || '').trim() || 'After my morning routine',
+          tiny: String(data.get('tiny') || '').trim() || 'Start for 2 minutes',
+          reward: String(data.get('reward') || '').trim(),
+          goal: Math.min(7, Math.max(1, Number(data.get('goal')) || 5))
+        };
+      });
+      editingId = null;
+      saveHabits();
+      render();
+    });
+
+    habitFormEl.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = habitNameInput.value.trim();
+      if (!name) return;
+
+      const newHabit = {
+        id: 'h_' + Date.now(),
+        name,
+        identity: habitIdentityInput.value.trim() || 'I am consistent',
+        cue: habitCueInput.value.trim() || 'After my morning routine',
+        tiny: habitTinyInput.value.trim() || 'Start for 2 minutes',
+        reward: habitRewardInput.value.trim(),
+        goal: Math.min(7, Math.max(1, Number(habitGoalInput.value) || 5)),
+        week: [false, false, false, false, false, false, false]
+      };
+
+      habits.unshift(newHabit);
+      saveHabits();
+      render();
+
+      habitFormEl.reset();
+      habitGoalInput.value = '5';
+      formFeedbackEl.classList.remove('hidden');
+      setTimeout(() => formFeedbackEl.classList.add('hidden'), 1800);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      stopTimerInterval();
+      editingId = null;
+      habits = DEFAULT_HABITS.map(h => ({ ...h, week: [...h.week] }));
+      saveHabits();
+      render();
+    });
+
+    badListEl.addEventListener('click', (event) => {
+      const btn = event.target.closest('button[data-bad-action]');
+      if (!btn) return;
+      const card = btn.closest('article[data-bad-id]');
+      if (!card) return;
+      const id = card.getAttribute('data-bad-id');
+      const action = btn.getAttribute('data-bad-action');
+
+      if (action === 'toggle') {
+        badHabits = badHabits.map(b => {
+          if (b.id !== id) return b;
+          const next = !b.avoidedToday;
+          return {
+            ...b,
+            avoidedToday: next,
+            cleanDays: next ? b.cleanDays + 1 : Math.max(0, b.cleanDays - 1)
+          };
+        });
+        saveBadHabits();
+        renderBadHabits();
+      } else if (action === 'delete') {
+        badHabits = badHabits.filter(b => b.id !== id);
+        saveBadHabits();
+        renderBadHabits();
+      }
+    });
+
+    badFormEl.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = badNameInput.value.trim();
+      if (!name) return;
+
+      badHabits.unshift({
+        id: 'b_' + Date.now(),
+        name,
+        invisible: badInvisibleInput.value.trim() || 'Remove the trigger from sight',
+        unattractive: badUnattractiveInput.value.trim() || 'Remind myself of the cost',
+        difficult: badDifficultInput.value.trim() || 'Add friction before starting',
+        unsatisfying: badUnsatisfyingInput.value.trim() || 'Log the slip immediately',
+        avoidedToday: false,
+        cleanDays: 0
+      });
+      saveBadHabits();
+      renderBadHabits();
+
+      badFormEl.reset();
+      badFeedbackEl.classList.remove('hidden');
+      setTimeout(() => badFeedbackEl.classList.add('hidden'), 1800);
+    });
+
+    badResetBtn.addEventListener('click', () => {
+      badHabits = DEFAULT_BAD_HABITS.map(b => ({ ...b }));
+      saveBadHabits();
+      renderBadHabits();
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        goodHabits: habits,
+        badHabits
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'atomic-habits-backup.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      backupStatusEl.textContent = 'Backup downloaded as atomic-habits-backup.json!';
+      backupStatusEl.className = 'text-xs text-emerald-700 font-medium mt-0.5';
+    });
+
+    importInput.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || '{}'));
+          if (!Array.isArray(data.goodHabits) && !Array.isArray(data.badHabits)) {
+            throw new Error('Invalid format');
+          }
+          if (Array.isArray(data.goodHabits)) {
+            habits = data.goodHabits.map(normalizeHabit);
+            saveHabits();
+          }
+          if (Array.isArray(data.badHabits)) {
+            badHabits = data.badHabits.map(normalizeBad);
+            saveBadHabits();
+          }
+          try { localStorage.setItem(LASTDAY_KEY, todayKey()); } catch (e) {}
+          render();
+          backupStatusEl.textContent = 'Backup restored!';
+          backupStatusEl.className = 'text-xs text-emerald-700 font-medium mt-0.5';
+        } catch (err) {
+          backupStatusEl.textContent = 'Could not read that file. Please choose a valid Atomic Habits JSON backup.';
+          backupStatusEl.className = 'text-xs text-rose-600 font-medium mt-0.5';
+        }
+        importInput.value = '';
+      };
+      reader.readAsText(file);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && rolloverDays()) {
+        editingId = null;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
